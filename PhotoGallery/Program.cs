@@ -24,6 +24,8 @@ builder.Services.AddHangfire(config =>
 // Add the Hangfire server
 builder.Services.AddHangfireServer();
 
+builder.Services.AddScoped<ImageProcessingService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
