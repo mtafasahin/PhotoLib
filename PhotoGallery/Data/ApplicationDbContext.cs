@@ -8,9 +8,18 @@ public class ApplicationDbContext : DbContext
     public DbSet<Image> Images { get; set; }
     public DbSet<Label> Labels { get; set; }
     public DbSet<ImageLabel> ImageLabels { get; set; }
+    public DbSet<ImageSimilarity> ImageSimilarities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
+
+    // ImageSimilarity tablosundaki ilişkiler
+        modelBuilder.Entity<ImageSimilarity>()
+            .HasOne(s => s.Image)
+            .WithMany()
+            .HasForeignKey(s => s.ImageId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
     // Çoka Çoka ilişki: Image <-> Label
     modelBuilder.Entity<ImageLabel>()
         .HasKey(il => new { il.ImageId, il.LabelId });

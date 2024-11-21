@@ -21,5 +21,19 @@ namespace PhotoGallery.Controllers
             _backgroundJobClient.Enqueue<ImageProcessingService>(service => service.ProcessImages());
             return Ok("Image processing job has been enqueued.");
         }
+
+
+        [HttpPost("calculate-similarities")]
+        public IActionResult CalculateSimilarities()
+        {
+            // Hangfire job'ını tetikle
+            BackgroundJob.Enqueue<ImageSimilarityService>(job => job.CalculateSimilarities());
+
+            return Ok("Similarity calculation job has been enqueued.");
+        }
     }
+
+
+   
+
 }

@@ -25,6 +25,7 @@ builder.Services.AddHangfire(config =>
 builder.Services.AddHangfireServer();
 
 builder.Services.AddScoped<ImageProcessingService>();
+builder.Services.AddScoped<ImageSimilarityService>();
 
 var app = builder.Build();
 
