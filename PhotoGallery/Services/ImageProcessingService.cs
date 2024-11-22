@@ -21,6 +21,8 @@ public class ImageProcessingService
             .Where(i => !i.IsProcessed)
             .ToList();
 
+        int batchCounter = 0;
+        const int batchSize = 5; // 10 kayıtta bir kaydet
         foreach (var image in unprocessedImages)
         {
             try
@@ -38,6 +40,13 @@ public class ImageProcessingService
                 image.IsProcessed = true;
                 image.HashValue = GenerateImageHash(image.Url);
                 _context.Images.Update(image);
+                batchCounter++;
+
+                if (batchCounter >= batchSize)
+                {
+                    _context.SaveChanges();
+                    batchCounter = 0;
+                }
             }
             catch (Exception ex)
             {
@@ -45,7 +54,13 @@ public class ImageProcessingService
             }
         }
 
-        _context.SaveChanges();
+
+        // Kalan kayıtları kaydet
+        if (batchCounter > 0)
+        {
+            _context.SaveChanges();
+        }
+       
     }
 
     private void ProcessStandardImage(Image image)
@@ -130,6 +145,9 @@ public class ImageProcessingService
                         }
                     }
                 }
+
+                image.Brand = exifProfile.GetValue(ExifTag.Make)?.Value;
+                image.Model = exifProfile.GetValue(ExifTag.Model)?.Value;
 
                 // Çözünürlük bilgisi ekle
                 image.Resolution = $"{magickImage.Width}x{magickImage.Height}";
