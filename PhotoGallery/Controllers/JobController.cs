@@ -1,6 +1,7 @@
 using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PhotoGallery.Dtos;
 
 namespace PhotoGallery.Controllers
 {
@@ -16,9 +17,12 @@ namespace PhotoGallery.Controllers
         }
 
         [HttpPost("process-images")]
-        public IActionResult ProcessImages()
+        public IActionResult ProcessImages([FromBody] List<RangeDto> ranges)
         {
-            _backgroundJobClient.Enqueue<ImageProcessingService>(service => service.ProcessImages());
+            foreach (var range in ranges)
+            {
+                _backgroundJobClient.Enqueue<ImageProcessingService>(service => service.ProcessImages(range.StartId, range.EndId));
+            }
             return Ok("Image processing job has been enqueued.");
         }
 

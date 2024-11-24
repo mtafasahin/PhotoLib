@@ -15,10 +15,11 @@ public class ImageProcessingService
         _context = context;
     }
 
-    public void ProcessImages()
+    public void ProcessImages(int startId, int endId)
     {
         var unprocessedImages = _context.Images
             .Where(i => !i.IsProcessed)
+            .Where(i => i.Id >= startId && i.Id <= endId)
             .ToList();
 
         int batchCounter = 0;
@@ -27,33 +28,24 @@ public class ImageProcessingService
         {
             try
             {
-                // if (Path.GetExtension(image.Url).ToLower() == ".heic")
-                // {
-                //     ProcessHeicImage(image);
-                // }
-                // else
-                // {
-                //     ProcessStandardImage(image);
-                // }
                 ProcessImageMetadata(image);
-
                 image.IsProcessed = true;
                 image.HashValue = GenerateImageHash(image.Url);
                 _context.Images.Update(image);
                 batchCounter++;
-
-                if (batchCounter >= batchSize)
-                {
-                    _context.SaveChanges();
-                    batchCounter = 0;
-                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error processing image {image.Url}: {ex.Message}");
+                image.Brand = "Error";
+            }
+
+            if (batchCounter >= batchSize)
+            {
+                _context.SaveChanges();
+                batchCounter = 0;
             }
         }
-
 
         // Kalan kayıtları kaydet
         if (batchCounter > 0)
@@ -146,8 +138,8 @@ public class ImageProcessingService
                     }
                 }
 
-                image.Brand = exifProfile.GetValue(ExifTag.Make)?.Value;
-                image.Model = exifProfile.GetValue(ExifTag.Model)?.Value;
+                image.Brand = exifProfile?.GetValue(ExifTag.Make)?.Value;
+                image.Model = exifProfile?.GetValue(ExifTag.Model)?.Value;
 
                 // Çözünürlük bilgisi ekle
                 image.Resolution = $"{magickImage.Width}x{magickImage.Height}";
