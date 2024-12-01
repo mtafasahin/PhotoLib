@@ -19,7 +19,9 @@ builder.Services.AddHangfire(config =>
     config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
           .UseSimpleAssemblyNameTypeSerializer()
           .UseRecommendedSerializerSettings()
-          .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("HangfireConnection")));
+          .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("HangfireConnection"), new PostgreSqlStorageOptions() {
+            InvisibilityTimeout = TimeSpan.FromHours(3)
+          }));
 
 // Add the Hangfire server
 builder.Services.AddHangfireServer();

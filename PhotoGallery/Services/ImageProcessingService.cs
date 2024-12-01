@@ -23,7 +23,7 @@ public class ImageProcessingService
             .ToList();
 
         int batchCounter = 0;
-        const int batchSize = 5; // 10 kayıtta bir kaydet
+        const int batchSize = 1; // 10 kayıtta bir kaydet
         foreach (var image in unprocessedImages)
         {
             try

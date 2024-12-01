@@ -13,7 +13,12 @@ public class ImageSimilarityService
 
         foreach (var image in images)
         {
-            foreach (var otherImage in images)
+            var otherImages = images.Where(i => i.Brand == image.Brand || i.Brand == "Error" || i.Brand is null ).ToList();
+            if(image.TakenDate is not null) {
+                otherImages = otherImages.Where(i => i.TakenDate is not null).ToList();
+                otherImages = otherImages.Where(i => Math.Abs((i.TakenDate.Value - image.TakenDate.Value).TotalHours) < 1 ).ToList();
+            }
+            foreach (var otherImage in otherImages)
             {
                 // Aynı resimle karşılaştırma yapma
                 if (image.Id == otherImage.Id) continue;
@@ -35,9 +40,11 @@ public class ImageSimilarityService
                     _context.ImageSimilarities.Add(similarity);
                 }
             }
+
+            _context.SaveChanges();
         }
 
-        _context.SaveChanges();
+        
     }
 
     private int CalculateHammingDistance(string hash1, string hash2)
