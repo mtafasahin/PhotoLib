@@ -2,7 +2,7 @@ using System;
 
 namespace PhotoGallery.Entities;
 
-public class Image
+public class Image : BaseEntity
 {
     public int Id { get; set; }
     public string Url { get; set; } = null!;

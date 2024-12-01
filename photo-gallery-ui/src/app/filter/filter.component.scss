@@ -1,0 +1,24 @@
+.filter-section {
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-right: 1px solid #ddd;
+  }
+  
+  .filter-section h3 {
+    margin-top: 0;
+  }
+  
+  .filter-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .filter-section input,
+  .filter-section select {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+  }
+  

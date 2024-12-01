@@ -1,0 +1,18 @@
+<div class="filter-section">
+    <h3>Filters</h3>
+    <div>
+      <label for="year">Year:</label>
+      <input id="year" type="number" [(ngModel)]="filters.year" placeholder="e.g., 2023" />
+    </div>
+  
+    <div>
+      <label for="month">Month:</label>
+      <select id="month" [(ngModel)]="filters.month">
+        <option value="">All</option>
+        <option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
+      </select>
+    </div>
+  
+    <button mat-raised-button color="primary" (click)="applyFilters()">Apply</button>
+  </div>
+  

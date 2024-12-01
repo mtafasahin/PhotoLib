@@ -1,6 +1,7 @@
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,7 @@ builder.Services.AddHangfire(config =>
     config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
           .UseSimpleAssemblyNameTypeSerializer()
           .UseRecommendedSerializerSettings()
-          .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("HangfireConnection"), new PostgreSqlStorageOptions() {
+           .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("HangfireConnection"), new PostgreSqlStorageOptions() {
             InvisibilityTimeout = TimeSpan.FromHours(3)
           }));
 
@@ -30,6 +31,14 @@ builder.Services.AddScoped<ImageProcessingService>();
 builder.Services.AddScoped<ImageSimilarityService>();
 
 var app = builder.Build();
+
+// "D:/resimler" dizinini tarayıcıya sunmak
+var imagePath = @"D:/resimler"; // Resimlerin bulunduğu dizin
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(imagePath),
+    RequestPath = "/images" // URL'de bu path üzerinden erişim sağlanacak
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

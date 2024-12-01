@@ -20,21 +20,25 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(s => s.ImageId)
             .OnDelete(DeleteBehavior.Cascade);
             
-    // Çoka Çoka ilişki: Image <-> Label
-    modelBuilder.Entity<ImageLabel>()
-        .HasKey(il => new { il.ImageId, il.LabelId });
+        // Çoka Çoka ilişki: Image <-> Label
+        modelBuilder.Entity<ImageLabel>()
+            .HasKey(il => new { il.ImageId, il.LabelId });
 
-    modelBuilder.Entity<ImageLabel>()
-        .HasOne(il => il.Image)
-        .WithMany(i => i.ImageLabels)
-        .HasForeignKey(il => il.ImageId);
+        modelBuilder.Entity<ImageLabel>()
+            .HasOne(il => il.Image)
+            .WithMany(i => i.ImageLabels)
+            .HasForeignKey(il => il.ImageId);
 
-    modelBuilder.Entity<ImageLabel>()
-        .HasOne(il => il.Label)
-        .WithMany(l => l.ImageLabels)
-        .HasForeignKey(il => il.LabelId);
+        modelBuilder.Entity<ImageLabel>()
+            .HasOne(il => il.Label)
+            .WithMany(l => l.ImageLabels)
+            .HasForeignKey(il => il.LabelId);
 
-    base.OnModelCreating(modelBuilder);
+        // Global Query Filter for Soft Delete
+        modelBuilder.Entity<Image>().HasQueryFilter(i => !i.IsDeleted);
+        modelBuilder.Entity<Label>().HasQueryFilter(i => !i.IsDeleted);
+
+        base.OnModelCreating(modelBuilder);
 }
 }
 

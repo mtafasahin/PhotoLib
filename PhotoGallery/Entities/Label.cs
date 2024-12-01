@@ -2,7 +2,7 @@ using System;
 
 namespace PhotoGallery.Entities;
 
-public class Label
+public class Label : BaseEntity
 {
     public int Id { get; set; }
     public string Name { get; set; }

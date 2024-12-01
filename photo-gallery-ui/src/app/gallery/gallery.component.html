@@ -1,0 +1,50 @@
+
+<div class="gallery-container">
+    <app-filter (filtersChanged)="applyFilters($event)"></app-filter>
+
+    <div class="action-section">
+        <button mat-raised-button color="primary" (click)="performAction()">
+            Benzer Resimleri Getir
+        </button>
+
+        <button mat-raised-button color="primary" (click)="deleteSelectedImages()">
+            Benzerlerini sil
+          </button>
+
+      </div>
+    
+    <mat-grid-list cols="4" rowHeight="200px" gutterSize="10px">
+        <mat-grid-tile *ngFor="let image of images" >
+          <div class="image-wrapper">
+            <!-- Checkbox -->
+            <input
+              type="checkbox"
+              class="select-checkbox"
+              (change)="toggleSelection(image.id)"
+              [checked]="selectedImageIds.includes(image.id)"
+            />
+    
+            <!-- Badge -->
+            <span *ngIf="image.similarCount > 0" class="badge">
+              {{ image.similarCount }}
+            </span>
+    
+            <span class="date-badge">
+                {{ image.takenDate ? (image.takenDate | date: 'shortDate') : 'Unknown' }}
+              </span>
+            <!-- Image -->
+            <img [src]="image.url" alt="Image" class="gallery-image" (click)="toggleSelection(image.id)" [class.selected]="selectedImageIds.includes(image.id)" />
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+  
+    <!-- Paging Controls -->
+    <div class="pagination-controls">
+      <button mat-raised-button color="primary" (click)="previousPage()" [disabled]="pageNumber === 1">Previous</button>
+      <span>Page {{ pageNumber }} of {{ totalPages }}</span>
+      <button mat-raised-button color="primary" (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+    </div>
+
+    
+  </div>
+  
