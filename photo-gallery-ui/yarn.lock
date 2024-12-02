@@ -200,6 +200,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular/animation@npm:^4.0.0-beta.8":
+  version: 4.0.0-beta.8
+  resolution: "@angular/animation@npm:4.0.0-beta.8"
+  peerDependencies:
+    "@angular/core": 4.0.0-beta.8
+  checksum: 10c0/3b60460734e2781f28c1cf0be2cfc95de2b78d41d93eb596564b351d1020de74ae8b0f4abe0c6e2adb5ee07baf6d8f3f1665be3164d8e4bd63730b21dc18969c
+  languageName: node
+  linkType: hard
+
 "@angular/animations@npm:^19.0.1":
   version: 19.0.1
   resolution: "@angular/animations@npm:19.0.1"
@@ -7714,6 +7723,7 @@ __metadata:
   resolution: "photo-gallery-ui@workspace:."
   dependencies:
     "@angular-devkit/build-angular": "npm:^19.0.2"
+    "@angular/animation": "npm:^4.0.0-beta.8"
     "@angular/animations": "npm:^19.0.1"
     "@angular/cdk": "npm:^19.0.1"
     "@angular/cli": "npm:^19.0.2"

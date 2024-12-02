@@ -28,6 +28,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["@angular-devkit/build-angular", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:19.0.2"],\
+          ["@angular/animation", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:4.0.0-beta.8"],\
           ["@angular/animations", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:19.0.1"],\
           ["@angular/cdk", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:19.0.1"],\
           ["@angular/cli", "npm:19.0.2"],\
@@ -274,6 +275,28 @@ const RAW_RUNTIME_STATE =
           ["magic-string", "npm:0.30.12"],\
           ["ora", "npm:5.4.1"],\
           ["rxjs", "npm:7.8.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@angular/animation", [\
+      ["npm:4.0.0-beta.8", {\
+        "packageLocation": "../../../../AppData/Local/Yarn/Berry/cache/@angular-animation-npm-4.0.0-beta.8-997b725696-10c0.zip/node_modules/@angular/animation/",\
+        "packageDependencies": [\
+          ["@angular/animation", "npm:4.0.0-beta.8"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:4.0.0-beta.8", {\
+        "packageLocation": "./.yarn/__virtual__/@angular-animation-virtual-8b2565fda9/5/AppData/Local/Yarn/Berry/cache/@angular-animation-npm-4.0.0-beta.8-997b725696-10c0.zip/node_modules/@angular/animation/",\
+        "packageDependencies": [\
+          ["@angular/animation", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:4.0.0-beta.8"],\
+          ["@angular/core", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:19.0.1"],\
+          ["@types/angular__core", null]\
+        ],\
+        "packagePeers": [\
+          "@angular/core",\
+          "@types/angular__core"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -9765,6 +9788,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["photo-gallery-ui", "workspace:."],\
           ["@angular-devkit/build-angular", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:19.0.2"],\
+          ["@angular/animation", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:4.0.0-beta.8"],\
           ["@angular/animations", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:19.0.1"],\
           ["@angular/cdk", "virtual:3e419f148058d05dd437a53f07a30a0b3642c28f41ebe1a11b9aab77c1213aa6b1805dd226af75408467945c656ec55864948c6e1c713ebc464b657120d220a9#npm:19.0.1"],\
           ["@angular/cli", "npm:19.0.2"],\

@@ -1,42 +1,76 @@
-
 <div class="gallery-container">
-    <app-filter (filtersChanged)="applyFilters($event)"></app-filter>
-
-    <div class="action-section">
-        <button mat-raised-button color="primary" (click)="performAction()">
-            Benzer Resimleri Getir
-        </button>
-
-        <button mat-raised-button color="primary" (click)="deleteSelectedImages()">
-            Benzerlerini sil
-          </button>
+    <!-- Üst Kısım: Filtre ve Label Alanı -->
+    <div class="top-section">
+      <!-- Sol Yarı: Filtreleme -->
+      <div class="filter-section">
+        <app-filter (filtersChanged)="applyFilters($event)"></app-filter>
+      </div>
+  
+      <!-- Sağ Yarı: Label'lar (Chips) -->
+      <div class="label-section">
+        <h3>Labels</h3>
+        <mat-form-field class="example-chip-list">
+            <mat-label>Favorite Labels</mat-label>
+            <mat-chip-grid #chipGrid aria-label="Enter labels">
+              @for (label of labels(); track label) {
+                <mat-chip-row
+                  (removed)="remove(label)"
+                  [editable]="true"
+                  (edited)="edit(label, $event)"
+                  [aria-description]="'press enter to edit ' + label.name"
+                >
+                  {{label.name}}
+                  <button matChipRemove [attr.aria-label]="'remove ' + label.name">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+              }
+              <input
+                placeholder="New label..."
+                [matChipInputFor]="chipGrid"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add($event)"
+              />
+            </mat-chip-grid>
+          </mat-form-field>
 
       </div>
-    
+    </div>
+  
+    <!-- Action Buttons -->
+    <div class="action-section">
+      <button mat-raised-button color="primary" (click)="performAction()">Benzer Resimleri Getir</button>
+      <span>&nbsp; &nbsp; </span>
+      <button mat-raised-button color="primary" (click)="deleteSelectedImages()">Benzerlerini sil</button>
+    </div>
+  
+    <!-- Resimler -->
     <mat-grid-list cols="4" rowHeight="200px" gutterSize="10px">
-        <mat-grid-tile *ngFor="let image of images" >
-          <div class="image-wrapper">
-            <!-- Checkbox -->
-            <input
-              type="checkbox"
-              class="select-checkbox"
-              (change)="toggleSelection(image.id)"
-              [checked]="selectedImageIds.includes(image.id)"
-            />
-    
-            <!-- Badge -->
-            <span *ngIf="image.similarCount > 0" class="badge">
-              {{ image.similarCount }}
-            </span>
-    
-            <span class="date-badge">
-                {{ image.takenDate ? (image.takenDate | date: 'shortDate') : 'Unknown' }}
-              </span>
-            <!-- Image -->
-            <img [src]="image.url" alt="Image" class="gallery-image" (click)="toggleSelection(image.id)" [class.selected]="selectedImageIds.includes(image.id)" />
-          </div>
-        </mat-grid-tile>
-      </mat-grid-list>
+      <mat-grid-tile *ngFor="let image of images">
+        <div class="image-wrapper">
+          <!-- Checkbox -->
+          <input
+            type="checkbox"
+            class="select-checkbox"
+            (change)="toggleSelection(image.id)"
+            [checked]="selectedImageIds.includes(image.id)"
+          />
+  
+          <!-- Badge -->
+          <span *ngIf="image.similarCount > 0" class="badge">
+            {{ image.similarCount }}
+          </span>
+  
+          <!-- Date Badge -->
+          <span class="date-badge">
+            {{ image.takenDate ? (image.takenDate | date: 'shortDate') : 'Unknown' }}
+          </span>
+          <!-- Image -->
+          <img [src]="image.url" alt="Image" class="gallery-image" (click)="openImageDialog(image.url)" [class.selected]="selectedImageIds.includes(image.id)" />
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
   
     <!-- Paging Controls -->
     <div class="pagination-controls">
@@ -45,6 +79,6 @@
       <button mat-raised-button color="primary" (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
     </div>
 
-    
+
   </div>
   

@@ -35,9 +35,17 @@ namespace PhotoGallery.Controllers
 
             return Ok("Similarity calculation job has been enqueued.");
         }
+
+        [HttpPost("convert-images")]
+        public IActionResult ConvertImages([FromBody] List<RangeDto> ranges)
+        {
+            // Hangfire job'ını tetikle
+            foreach (var range in ranges)
+            {
+                BackgroundJob.Enqueue<ImageSimilarityService>(job => job.ConvertHeicToJpeg(range.StartId, range.EndId));
+            }
+            
+            return Ok("Similarity calculation job has been enqueued.");
+        }
     }
-
-
-   
-
 }

@@ -12,9 +12,7 @@ public class Image : BaseEntity
     public string? Resolution { get; set; } // Örn: "1920x1080"
     public string? HashValue { get; set; } // Resim hash değeri
     public bool IsProcessed { get; set; } = false;
-
     public string? MetadataJson { get; set; } // Tüm metadata bilgilerini JSON formatında saklar
-
     // Navigation Properties
     public ICollection<ImageLabel> ImageLabels { get; set; }
 }

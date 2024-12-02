@@ -4,6 +4,16 @@ import { CommonModule } from '@angular/common';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
 import { FilterComponent } from '../filter/filter.component';
+import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {LiveAnnouncer} from '@angular/cdk/a11y';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {ChangeDetectionStrategy, inject, signal} from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ImageDialogComponent } from '../image-dialog/image-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+
 
 interface Image {
   id: number;
@@ -16,26 +26,34 @@ interface Image {
   similarCount: number;
 }
 
+export interface Label {
+  name: string;
+}
+
 @Component({
   selector: 'app-gallery',
   standalone: true,
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],
-  imports: [CommonModule, HttpClientModule, MatGridListModule, MatButtonModule,FilterComponent], // HttpClientModule eklendi
+  imports: [CommonModule, HttpClientModule, MatGridListModule, MatButtonModule,FilterComponent,
+      MatFormFieldModule, MatChipsModule, MatIconModule,MatDialogModule], // HttpClientModule eklendi
 })
 export class GalleryComponent {
   images: Image[] = []; // Tip tanımlaması yapıldı
-
   filteredImages: Image[] = [...this.images];
   selectedImageIds: number[] = []; // Seçilen resimlerin ID'lerini tutar
   pageNumber: number = 1;
   pageSize: number = 20;
   totalPages: number = 0;
-
   filteredYear: string = "";
   filteredMonth: string = "";
 
-  constructor(private http: HttpClient) {}
+  readonly addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  readonly labels = signal<Label[]>([{name: 'İclal'}, {name: 'Berra'}, {name: 'Nil Beste'}]);
+  readonly announcer = inject(LiveAnnouncer);
+
+  constructor(private http: HttpClient, private dialog: MatDialog) {}
 
   ngOnInit() {
     console.log("ng on init");
@@ -46,6 +64,14 @@ export class GalleryComponent {
     this.filteredYear = filters.year ? filters.year : "";
     this.filteredMonth = filters.month ? filters.month : "";
     this.loadImages();
+  }
+
+  openImageDialog(imageUrl: string) {
+    this.dialog.open(ImageDialogComponent, {
+      data: { url: imageUrl },
+      width: '80%',
+      height: '80%',
+    });
   }
 
   toggleSelection(imageId: number) {
@@ -133,5 +159,50 @@ export class GalleryComponent {
 
   deleteImage(image: any) {
     console.log('Deleting image:', image);
+  }
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    // Add our fruit
+    if (value) {
+      this.labels.update(labels => [...labels, {name: value}]);
+    }
+
+    // Clear the input value
+    event.chipInput!.clear();
+  }
+
+  remove(label: Label): void {
+    this.labels.update(labels => {
+      const index = labels.indexOf(label);
+      if (index < 0) {
+        return labels;
+      }
+
+      labels.splice(index, 1);
+      this.announcer.announce(`Removed ${label.name}`);
+      return [...labels];
+    });
+  }
+
+  edit(label: Label, event: MatChipEditedEvent) {
+    const value = event.value.trim();
+
+    // Remove fruit if it no longer has a name
+    if (!value) {
+      this.remove(label);
+      return;
+    }
+
+    // Edit existing fruit
+    this.labels.update(labels => {
+      const index = labels.indexOf(label);
+      if (index >= 0) {
+        labels[index].name = value;
+        return [...labels];
+      }
+      return labels;
+    });
   }
 }
