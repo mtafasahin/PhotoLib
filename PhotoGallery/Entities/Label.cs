@@ -11,3 +11,9 @@ public class Label : BaseEntity
     public ICollection<ImageLabel> ImageLabels { get; set; }
 }
 
+public class LabelDto {
+    public int Id { get; set; }
+    public string Name { get; set; }
+
+}
+

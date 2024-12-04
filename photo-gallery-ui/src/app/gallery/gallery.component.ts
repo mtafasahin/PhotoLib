@@ -13,11 +13,12 @@ import {ChangeDetectionStrategy, inject, signal} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ImageDialogComponent } from '../image-dialog/image-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
-
+import { LabelService } from '../services/label.service';
 
 interface Image {
   id: number;
   url: string;
+  thumbUrl: string;
   brand?: string;
   model?: string;
   takenDate?: string;
@@ -28,6 +29,7 @@ interface Image {
 
 export interface Label {
   name: string;
+  id: number;
 }
 
 @Component({
@@ -50,15 +52,19 @@ export class GalleryComponent {
 
   readonly addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  readonly labels = signal<Label[]>([{name: 'İclal'}, {name: 'Berra'}, {name: 'Nil Beste'}]);
+  readonly labels = signal<Label[]>([]);
   readonly announcer = inject(LiveAnnouncer);
 
-  constructor(private http: HttpClient, private dialog: MatDialog) {}
+  constructor(private http: HttpClient, private dialog: MatDialog, private labelService: LabelService) {}
 
   ngOnInit() {
     console.log("ng on init");
     this.loadImages();
+    this.loadLabels();
   }
+
+    // Label'ları backend'den yükle
+    
 
   applyFilters(filters: { year: string; month: string }) {
     this.filteredYear = filters.year ? filters.year : "";
@@ -118,6 +124,7 @@ export class GalleryComponent {
       this.images = this.images.map(image => ({
         ...image,
         originalUrl : image.url,
+        thumbUrl: 'api/Image/' + encodeURI(image.thumbUrl.replace(/^D:\/resimler\\/, '')).replace('#','%23'),
         url: 'api/Image/' + encodeURI(image.url.replace(/^D:\/resimler\\/, '')).replace('#','%23')
         
       }));
@@ -161,14 +168,54 @@ export class GalleryComponent {
     console.log('Deleting image:', image);
   }
 
+
+
+  // // Yeni bir label ekle
+  // addNewLabel(): void {
+  //   if (!this.newLabel.trim()) {
+  //     alert('Label name cannot be empty.');
+  //     return;
+  //   }
+
+  //   this.labelService.addLabel({ name: this.newLabel }).subscribe({
+  //     next: (response) => {
+  //       this.labels.push(response.label);
+  //       this.newLabel = ''; // Giriş alanını temizle
+  //     },
+  //     error: (err) => console.error('Error adding label:', err)
+  //   });
+  // }
+
+  // // Seçilen label'ı listeye ekle veya kaldır
+  // toggleLabelSelection(label: string): void {
+  //   const index = this.selectedLabels.indexOf(label);
+  //   if (index > -1) {
+  //     this.selectedLabels.splice(index, 1);
+  //   } else {
+  //     this.selectedLabels.push(label);
+  //   }
+  // }
+
+  loadLabels(): void {
+    this.labelService.getLabels().subscribe({
+      next: (labels:Label[]) => {
+        this.labels.set(labels);
+        console.log(this.labels);
+      },
+      error: (err: any) => console.error('Error fetching labels:', err)
+    });
+  }
+
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-
-    // Add our fruit
     if (value) {
-      this.labels.update(labels => [...labels, {name: value}]);
+      this.labelService.addLabel({ name: value }).subscribe({
+        next: (response:any) => {
+          this.labels.update(labels => [...labels, response.label]);
+        },
+        error: (err: any) => console.error('Error adding label:', err)
+      });    
     }
-
     // Clear the input value
     event.chipInput!.clear();
   }

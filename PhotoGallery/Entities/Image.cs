@@ -6,6 +6,7 @@ public class Image : BaseEntity
 {
     public int Id { get; set; }
     public string Url { get; set; } = null!;
+    public string ThumbUrl { get; set; } = null!;
     public string? Brand { get; set; } // Kamera markası
     public string? Model { get; set; } // Kamera modeli
     public DateTime? TakenDate { get; set; } // Çekim tarihi

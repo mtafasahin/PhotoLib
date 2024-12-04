@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PhotoGallery.Dtos;
+using PhotoGallery.Entities;
 
 namespace PhotoGallery.Controllers
 {
@@ -66,6 +67,53 @@ namespace PhotoGallery.Controllers
             return File(fileStream, "image/jpeg");
         }
 
+        [HttpGet]
+        [Route("labels")]
+        public IActionResult GetLabels()
+        {
+            try
+            {
+                var labels = _context.Labels.ToList();
+                return Ok(labels);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving labels.", error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Route("labels")]
+        public IActionResult AddLabel([FromBody] LabelDto newLabel)
+        {
+            try
+            {
+
+                if (string.IsNullOrWhiteSpace(newLabel.Name))
+                    return BadRequest(new { message = "Label name is required." });
+
+                // Varlık kontrolü
+                var existingLabels = _context.Labels.ToList();
+
+                var existingLabel = existingLabels
+                    .FirstOrDefault(l => l.Name.ToLower().Equals(newLabel.Name.ToLower()));
+
+                if (existingLabel != null)
+                {
+                    return Ok(new { message = "Label added successfully.", label = existingLabel });
+                }
+                var label = new Label{Name = newLabel.Name};
+                _context.Labels.Add(label);
+                _context.SaveChanges();
+                return Ok(new { message = "Label added successfully.", label });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while adding the label.", error = ex.Message });
+            }
+        }
+
+
         [HttpGet("{id}/similar")]
         public IActionResult GetSimilarImages(int id)
         {
@@ -90,6 +138,7 @@ namespace PhotoGallery.Controllers
                         i.TakenDate,
                         i.Brand,
                         i.Model,  
+                        i.ThumbUrl,
                         SimilarCount = _context.ImageSimilarities.Count(s => s.ImageId == i.Id)
                     })
                     .ToList();
@@ -165,6 +214,7 @@ namespace PhotoGallery.Controllers
                         i.TakenDate,
                         i.Brand,
                         i.Model,
+                        i.ThumbUrl,
                         SimilarCount = _context.ImageSimilarities.Count(s => s.ImageId == i.Id && !s.SimilarImage.IsDeleted)
                     })
                     

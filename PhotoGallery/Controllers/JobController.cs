@@ -26,6 +26,16 @@ namespace PhotoGallery.Controllers
             return Ok("Image processing job has been enqueued.");
         }
 
+        [HttpPost("create-thumbs")]
+        public IActionResult CreateThumbs([FromBody] List<RangeDto> ranges)
+        {
+            foreach (var range in ranges)
+            {
+                _backgroundJobClient.Enqueue<ImageProcessingService>(service => service.CreateThumbnails(range.StartId, range.EndId));
+            }
+            return Ok("Image processing job has been enqueued.");
+        }
+
 
         [HttpPost("calculate-similarities")]
         public IActionResult CalculateSimilarities()

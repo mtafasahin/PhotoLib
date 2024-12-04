@@ -34,7 +34,7 @@
               />
             </mat-chip-grid>
           </mat-form-field>
-
+          <button mat-raised-button color="primary" (click)="performAction()">Etiketi Uygula</button>
       </div>
     </div>
   
@@ -46,7 +46,7 @@
     </div>
   
     <!-- Resimler -->
-    <mat-grid-list cols="4" rowHeight="200px" gutterSize="10px">
+    <mat-grid-list cols="5" rowHeight="200px" gutterSize="10px">
       <mat-grid-tile *ngFor="let image of images">
         <div class="image-wrapper">
           <!-- Checkbox -->
@@ -67,7 +67,7 @@
             {{ image.takenDate ? (image.takenDate | date: 'shortDate') : 'Unknown' }}
           </span>
           <!-- Image -->
-          <img [src]="image.url" alt="Image" class="gallery-image" (click)="openImageDialog(image.url)" [class.selected]="selectedImageIds.includes(image.id)" />
+          <img [src]="image.thumbUrl" alt="image.url" class="gallery-image" (click)="openImageDialog(image.url)" [class.selected]="selectedImageIds.includes(image.id)" />
         </div>
       </mat-grid-tile>
     </mat-grid-list>

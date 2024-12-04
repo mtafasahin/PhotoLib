@@ -2,6 +2,7 @@ using System.Text.Json;
 using ImageMagick;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using PhotoGallery.Entities;
@@ -15,6 +16,68 @@ public class ImageProcessingService
         _context = context;
     }
 
+    string AddPostfixToFileName(string originalPath, string postfix)
+    {
+        // Dosya adını ve uzantısını ayır
+        string directory = Path.GetDirectoryName(originalPath);
+        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(originalPath);
+        string extension = Path.GetExtension(originalPath);
+
+        // Yeni dosya adı oluştur
+        string newFileName = $"{fileNameWithoutExtension}{postfix}{extension}";
+
+        // Yeni dosya yolu oluştur
+        return Path.Combine(directory, newFileName);
+    }
+
+    private string CreateThumbnail(string url, uint width, uint height) 
+    {
+        var outputPath = Path.ChangeExtension(AddPostfixToFileName(url, "-th"),".jpg");
+        try
+        {                        
+            using (var image = new MagickImage(url))
+            {
+                // Oranları koruyarak boyutlandır
+                image.Resize(width, height);
+                // Kaliteyi düşür (isteğe bağlı)
+                image.Quality = 75;
+                image.Strip(); // Gereksiz metadata'yı kaldır
+                image.Format = MagickFormat.Jpg;
+                
+                // Thumbnail'i kaydet
+                image.Write(outputPath);
+            }
+            Console.WriteLine($"Thumbnail oluşturuldu ve {outputPath} konumuna kaydedildi.");
+            // Resmi yükle           
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Thumbnail oluşturulurken bir hata oluştu: {ex.Message}");
+            return string.Empty;
+        }
+        return outputPath;
+    }
+
+    public void CreateThumbnails(int startId, int endId) {
+        
+        var unprocessedImages = _context.Images
+            .Where(i => !i.IsDeleted)
+            .Where(i => string.IsNullOrEmpty(i.ThumbUrl))
+            .Where(i => i.Id >= startId && i.Id <= endId)
+            .ToList();
+        
+        foreach (var unprocessedImage in unprocessedImages)
+        {
+            unprocessedImage.ThumbUrl =  CreateThumbnail(unprocessedImage.Url, 600, 400);
+            if(!string.IsNullOrEmpty(unprocessedImage.ThumbUrl)) 
+            {
+                _context.Update(unprocessedImage);
+                _context.SaveChanges();
+            }
+        }
+        // Resmi yükle        
+    }
+
     public void ProcessImages(int startId, int endId)
     {
         var unprocessedImages = _context.Images
@@ -26,19 +89,7 @@ public class ImageProcessingService
         const int batchSize = 1; // 10 kayıtta bir kaydet
         foreach (var image in unprocessedImages)
         {
-            try
-            {
-                ProcessImageMetadata(image);
-                image.IsProcessed = true;
-                image.HashValue = GenerateImageHash(image.Url);
-                _context.Images.Update(image);
-                batchCounter++;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error processing image {image.Url}: {ex.Message}");
-                image.Brand = "Error";
-            }
+            batchCounter = ProcessImage(batchCounter, image);
 
             if (batchCounter >= batchSize)
             {
@@ -53,6 +104,26 @@ public class ImageProcessingService
             _context.SaveChanges();
         }
        
+    }
+
+    private int ProcessImage(int batchCounter, Image? image)
+    {
+        try
+        {
+            ProcessImageMetadata(image);
+            image.ThumbUrl = CreateThumbnail(image.Url, 600, 400);            
+            image.IsProcessed = true;
+            image.HashValue = GenerateImageHash(image.Url);
+            _context.Images.Update(image);
+            batchCounter++;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error processing image {image.Url}: {ex.Message}");
+            image.Brand = "Error";
+        }
+
+        return batchCounter;
     }
 
     private void ProcessStandardImage(Image image)
